@@ -1,15 +1,16 @@
 #ifndef __SH1106_H
 #define __SH1106_H
 
-#include "stm32f1xx_hal.h"
+#include <stdint.h>
+#include "font.h"
 
 // SH1106 display connection:
-//   PB12 --> CS
-//   PB14 --> RES
-//   PC6  --> DC
-//   PB13 --> CLK
-//   PB15 --> MOSI
-
+//   GP10 --> CLK
+//   GP11 --> DIN
+//   GP12 --> NC
+//   GP13 --> CS
+//   GP14 --> D/C
+//   GP15 --> RES
 
 // Use bit-banding to draw pixel
 //   0 - use logic operations to set pixel color
@@ -19,40 +20,36 @@
 // Pixel set function definition
 //   0 - call pixel function (less code size in cost of speed)
 //   1 - inline pixel function (higher speed in cost of code size)
-#define SH1106_OPT_PIXEL     1
+#define SH1106_OPT_PIXEL     0
 
 // DMA usage
 //   0 - DMA is not used
 //   1 - compile functions for DMA transfer VRAM to display
 #define SH1106_USE_DMA       0
 
-
-// SH1106 HAL
-
-// SPI port
-#define SH1106_SPI_PORT      hspi2
+// SPI
+#define SH1106_SPI_PORT      spi1
+#define SH1106_SPI_BAUD			 400000
 
 // GPIO peripherals
-#define SH1106_GPIO_PERIPH   (RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIOCEN)
+
+#define SH1106_GPIO_SCK			10
+#define SH1106_GPIO_MOSI		11
 
 // SH1106 RS/A0 (Data/Command select) pin (PC6)
-#define SH1106_DC_PORT       GPIOC
-#define SH1106_DC_PIN        GPIO_PIN_6
-#define SH1106_DC_H()        HAL_GPIO_WritePin(SH1106_DC_PORT, SH1106_DC_PIN,GPIO_PIN_SET)
-#define SH1106_DC_L()        HAL_GPIO_WritePin(SH1106_DC_PORT, SH1106_DC_PIN,GPIO_PIN_RESET)
+#define SH1106_GPIO_DC        14
+#define SH1106_DC_H()        gpio_put(SH1106_GPIO_DC, 1)
+#define SH1106_DC_L()        gpio_put(SH1106_GPIO_DC, 0)
 
 // SH1106 RST (Reset) pin (PB14)
-#define SH1106_RST_PORT      GPIOB
-#define SH1106_RST_PIN       GPIO_PIN_14
-#define SH1106_RST_H()       HAL_GPIO_WritePin(SH1106_RST_PORT, SH1106_RST_PIN,GPIO_PIN_SET)
-#define SH1106_RST_L()       HAL_GPIO_WritePin(SH1106_RST_PORT, SH1106_RST_PIN,GPIO_PIN_RESET)
+#define SH1106_GPIO_RST       15
+#define SH1106_RST_H()			 gpio_put(SH1106_GPIO_RST, 1) 
+#define SH1106_RST_L()       gpio_put(SH1106_GPIO_RST, 0) 
 
 // SH1106 CS (Chip Select) pin (PB12)
-#define SH1106_CS_PORT       GPIOB
-#define SH1106_CS_PIN        GPIO_PIN_12
-#define SH1106_CS_H()        HAL_GPIO_WritePin(SH1106_CS_PORT, SH1106_CS_PIN,GPIO_PIN_SET)
-#define SH1106_CS_L()        HAL_GPIO_WritePin(SH1106_CS_PORT, SH1106_CS_PIN,GPIO_PIN_RESET)
-
+#define SH1106_GPIO_CS        13
+#define SH1106_CS_H()        gpio_put(SH1106_GPIO_CS, 1)
+#define SH1106_CS_L()        gpio_put(SH1106_GPIO_CS, 0)
 
 // Screen dimensions
 #define SCR_W                 (uint8_t)128 // width
@@ -147,26 +144,10 @@ enum {
 	FONT_H = (uint8_t)(!FONT_V) // Horizontal font scan lines
 };
 
-
-// Font descriptor
-typedef struct {
-	uint8_t font_Width;       // Width of character
-	uint8_t font_Height;      // Height of character
-	uint8_t font_BPC;         // Bytes for one character
-	uint8_t font_Scan;        // Font scan lines behavior
-	uint8_t font_MinChar;     // Code of the first known symbol
-	uint8_t font_MaxChar;     // Code of the last known symbol
-	uint8_t font_UnknownChar; // Code of the unknown symbol
-	uint8_t font_Data[];      // Font data
-} Font_TypeDef;
-
-
 // Public variables
 extern uint16_t scr_width;
 extern uint16_t scr_height;
 extern uint8_t LCD_PixelMode;
-
-extern SPI_HandleTypeDef SH1106_SPI_PORT;
 
 // Function prototypes
 //void SH1106_InitGPIO(void);
