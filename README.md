@@ -1,4 +1,4 @@
-# SH1106 driver 1.3 OLED display for raspberry pi pico
+# SH1106 driver (1.3 OLED display) for Raspberry Pi Pico
 
 ## GPIO onfiguration
 
