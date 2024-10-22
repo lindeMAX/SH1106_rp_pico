@@ -1,6 +1,25 @@
-# SH1106 driver 1.3 OLED display for STM32 using HAL
+# SH1106 driver 1.3 OLED display for raspberry pi pico
 
-* STM32F103x devices
-* SPI2 is configured by default
-* You might think your device has SSD1309 but chances are you have SH1106 instead
-* Font examples can be found in [my parent project](https://github.com/desertkun/pods/tree/master/inc).
+## GPIO onfiguration
+
+> spi1 is used as default
+
+| GPIO | OLED |
+|:---: |:---: |
+| 10 | CLK |
+| 11 | DIN |
+| 12 | NC |
+| 13 | CS |
+| 14 | D/C |
+| 15 | RES |
+
+## Compile & Flash
+
+```bash
+mkdir build
+cd build
+cmake ..
+make
+picotool load test.uf2
+picotool reboot
+```
